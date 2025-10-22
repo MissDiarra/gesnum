@@ -51,6 +51,28 @@ router.put('/reset-password', async (req, res) => {
   });
 });
 
+router.post('/reset-password/request', async (req, res) => {
+  console.log('Requête reçue côté backend :', req.body);
+  const { email } = req.body;
+
+  db.query('SELECT * FROM utilisateur WHERE Email_Util = ?', [email], (err, results) => {
+    if (err) {
+      console.error('Erreur DB :', err);
+       return res.status(500).json({ message: 'Erreur DB ❌' });
+    }  
+
+    if (results.length === 0) {
+      console.log('Email non trouvé dans la base :', email);
+      return res.status(404).json({ message: 'Email introuvable ❌' });
+    }
+
+    // Générer un token, envoyer l'email, etc.
+    console.log('Email trouvé :', results[0]);
+    return res.status(200).json({ message: 'Email envoyé ✅' });
+  });  
+});
+
+
 router.get('/', (req, res) => {
   db.query('SELECT * FROM utilisateur WHERE Corbeille = 0', (err, results) => {
     if (err) return res.status(500).json({ message: 'Erreur DB' });
